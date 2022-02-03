@@ -251,11 +251,13 @@ func (e *Engine) RenderTransientPrompt() string {
 	switch e.Env.Shell() {
 	case zsh:
 		// escape double quotes contained in the prompt
-		prompt := fmt.Sprintf("PS1=\"%s\"", strings.ReplaceAll(e.Writer.String(), "\"", "\"\""))
+		str, _ := e.Writer.String()
+		prompt := fmt.Sprintf("PS1=\"%s\"", strings.ReplaceAll(str, "\"", "\"\""))
 		prompt += "\nRPROMPT=\"\""
 		return prompt
 	case pwsh, powershell5, winCMD:
-		return e.Writer.String()
+		str, _ := e.Writer.String()
+		return str
 	}
 	return ""
 }

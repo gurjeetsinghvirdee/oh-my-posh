@@ -42,6 +42,7 @@ type Block struct {
 	previousActiveSegment *Segment
 	activeBackground      string
 	activeForeground      string
+	length                int
 }
 
 func (b *Block) init(env environment.Environment, writer color.Writer, ansi *color.Ansi) {
@@ -92,7 +93,7 @@ func (b *Block) renderSegmentsText() {
 	}
 }
 
-func (b *Block) renderSegments() string {
+func (b *Block) renderSegments() (str string) {
 	defer b.writer.Reset()
 	for _, segment := range b.Segments {
 		if !segment.active {
@@ -102,7 +103,8 @@ func (b *Block) renderSegments() string {
 	}
 	b.writePowerline(true)
 	b.writer.ClearParentColors()
-	return b.writer.String()
+	str, b.length = b.writer.String()
+	return str
 }
 
 func (b *Block) renderSegment(segment *Segment) {
@@ -180,7 +182,7 @@ func (b *Block) debug() (int, []*SegmentTiming) {
 		segmentTiming.text = segment.text
 		if segmentTiming.active {
 			b.renderSegment(segment)
-			segmentTiming.text = b.writer.String()
+			segmentTiming.text, b.length = b.writer.String()
 			b.writer.Reset()
 		}
 		segmentTiming.duration = time.Since(start)
